@@ -12,24 +12,24 @@ const routes = [
     children: [
       {
         path: '/sys-admin/product/album/add-new',
-        component: () => import('../views/sys-admin/permission/product/AlbumAddNewView.vue')
+        component: () => import('../views/sys-admin/product/AlbumAddNewView.vue')
       },
       {
         path: '/sys-admin/product/album',
-        component: () => import('../views/sys-admin/permission/product/AlbumListView.vue')
+        component: () => import('../views/sys-admin/product/AlbumListView.vue')
       },
       {
         path: '/sys-admin/product/category',
-        component: () => import('../views/sys-admin/permission/product/CategoryListView.vue')
+        component: () => import('../views/sys-admin/product/CategoryListView.vue')
       },
       // ======================== 权限管理 ========================
       {
         path: '/sys-admin/permission/admin/add-new',
-        component: () => import('../views/sys-admin/permission/permission/AdminAddNewView')
+        component: () => import('../views/sys-admin/permission/AdminAddNewView')
       },
       {
         path: '/sys-admin/permission/admin',
-        component: () => import('../views/sys-admin/permission/permission/AdminListView')
+        component: () => import('../views/sys-admin/permission/AdminListView')
       },
     ]
   },

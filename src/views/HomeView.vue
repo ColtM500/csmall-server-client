@@ -19,7 +19,7 @@
           </el-dropdown>
         </div>
         <!-- 左侧的标题文字 -->
-        <h1>酷鲨商城运营管理平台</h1>
+        <h1>二手手机回收运营平台</h1>
       </el-header>
       <!-- 下半部分 -->
       <el-container class="layout-body">
@@ -125,7 +125,9 @@ export default {
       this.activeMenuItemPath = currentPath;
     }
   },
-  mounted() {
+  created() {//类似于 AlbumController controller = new AlbumController(); 界面vue对象已经创建好了
+  },
+  mounted() {//类似于 controller.setService(albumService) 相关的数据已经准备好了
     this.handleActiveMenuItem();
   }
 }
@@ -134,10 +136,13 @@ export default {
 <style>
 .layout-header {
   background: #2c3e50;
+  margin-left: -3px;
+  margin-right: -5px;
 }
 
 .layout-header h1 {
   line-height: 20px;
+  margin-left: -50%;
   color: #fff;
 }
 
@@ -162,6 +167,7 @@ export default {
 
 .layout-aside {
   background: #222;
+  margin-left: 5px;
 }
 
 .layout-aside .el-menu {
