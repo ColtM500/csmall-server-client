@@ -168,6 +168,7 @@ export default {
 .layout-aside {
   background: #222;
   margin-left: 5px;
+  text-align: left;
 }
 
 .layout-aside .el-menu {
