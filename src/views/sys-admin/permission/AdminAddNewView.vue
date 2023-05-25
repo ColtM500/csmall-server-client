@@ -64,31 +64,7 @@ export default {
   data() {
     return {
       // 角色的下拉菜单的选项数据
-      roleListOptions: [ {
-        "id": 1,
-        "name": "系统管理员"
-      },
-        {
-          "id": 2,
-          "name": "超级管理员"
-        },
-        {
-          "id": 3,
-          "name": "商品管理员"
-        },
-        {
-          "id": 4,
-          "name": "品牌管理员"
-        },
-        {
-          "id": 5,
-          "name": "分类管理员"
-        },
-        {
-          "id": 6,
-          "name": "相册管理员"
-        }
-      ],
+      roleListOptions: [],
       //角色的下拉表单
       ruleForm: {
         username: 'sb1',
@@ -166,24 +142,35 @@ export default {
         }
       });
     },
+
     //重置表单
     resetForm(formName) {
       this.$refs[formName].resetFields();
     },
+
     //加载角色列表
-    LoadRoleList(){
-      let url = 'http://localhost:9081/roles';
+    loadRoleList() {
+      let url = 'http://localhost:9181/roles/list';
       console.log('url = ' + url);
 
-      this.axios.get(url).then((response)=>{
-          let jsonResult = response.data;
-          this.roleListOptions = jsonResult.data.list;
-      })
-    },
-    //生命周期中的钩子 页加载渲染完成，自动执行的方法 进行数据初始化操作
-    mounted(){
-      this.LoadRoleList();
+      this.axios.get(url).then((response) => {
+        let jsonResult = response.data;
+        if (jsonResult.state == 20000) {
+          this.roleListOptions = jsonResult.data;
+        } else {
+          this.$alert(jsonResult.message, '错误', {
+            confirmButtonText: '确定',
+            callback: action => {
+            }
+          });
+        }
+      });
     }
+
+  },
+  //生命周期中的钩子 页加载渲染完成，自动执行的方法 进行数据初始化操作
+  mounted(){
+    this.loadRoleList();
   }
 }
 </script>
