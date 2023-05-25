@@ -7,7 +7,6 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
-    name: 'home',
     component: HomeView,
     children: [
       {
@@ -18,6 +17,22 @@ const routes = [
         path: '/sys-admin/product/album',
         component: () => import('../views/sys-admin/product/AlbumListView.vue')
       },
+      // {
+      //   path: '/sys-admin/product/brand/add-new',
+      //   component: () => import('../views/sys-admin/product/BrandAddNewView.vue')
+      // },
+      // {
+      //   path: '/sys-admin/product/brand',
+      //   component: () => import('../views/sys-admin/product/BrandListView.vue')
+      // },
+      // {
+      //   path: '/sys-admin/product/attribute-template/add-new',
+      //   component: () => import('../views/sys-admin/product/AttributeTemplateAddNewView.vue')
+      // },
+      // {
+      //   path: '/sys-admin/product/attribute-template',
+      //   component: () => import('../views/sys-admin/product/AttributeTemplateListView.vue')
+      // },
       {
         path: '/sys-admin/product/category',
         component: () => import('../views/sys-admin/product/CategoryListView.vue')
@@ -35,17 +50,13 @@ const routes = [
   },
   {
     path: '/about',
-    name: 'about',
-    component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
-  },
-  {
-    path: '/about',
     component: () => import('../views/AboutView.vue')
   },
   {
     path: '/login',
     component: () => import('../views/LoginView.vue')
   },
+
 ]
 
 const router = new VueRouter({

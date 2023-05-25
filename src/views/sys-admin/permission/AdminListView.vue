@@ -10,7 +10,7 @@
 
     <div style="margin-bottom: 20px; margin-right: 1000px">
       <el-button type="primary" size="medium"
-                 @click="$router.push('/sys-admin/product/album/add-new')">添加管理员
+                 @click="$router.push('/sys-admin/permission/admin/add-new')">添加管理员
       </el-button>
     </div>
 
