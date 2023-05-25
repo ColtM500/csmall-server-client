@@ -158,34 +158,35 @@ export default {
     },
 
     submitEditForm() {
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          let url = 'http://localhost:8080/album/updateInfoById';
-          console.log('url = ' + url);
+      let url = 'http://localhost:9180/album/updateInfoById';
+      console.log('url = ' + url);
 
-          let formData = this.qs.stringify(this.editForm);
-          console.log('formData = ' + formData);
+      let formData = this.qs.stringify(this.editForm);
+      console.log('formData = ' + formData);
 
-          this.axios.post(url, this.editForm).then((response) => {
-            let jsonResult = response.data;
-            console.log(response)
-            if (jsonResult.state == 20000) {
-              this.$message({
-                message: '添加相册成功！',
-                type: 'success'
-              });
-              this.resetForm(formName);
-            } else {
-              this.$alert(jsonResult.message, '错误', {
-                confirmButtonText: '确定',
-                callback: action => {
-                }
-              });
+      this.axios.post(url, formData).then((response) => {
+        let jsonResult = response.data;
+        if (jsonResult.state == 20000) {
+          this.$message({
+            message: '修改相册成功！',
+            type: 'success'
+          });
+          this.dialogFormVisible = false;
+          this.loadAlbumList();
+        } else if (jsonResult.state == 40400){
+          this.$alert(jsonResult.message, '错误', {
+            confirmButtonText: '确定',
+            callback: action => {
+              this.dialogFormVisible = false;
+              this.loadAlbumList();
             }
           });
         } else {
-          console.log('error submit!!');
-          return false;
+          this.$alert(jsonResult.message, '错误', {
+            confirmButtonText: '确定',
+            callback: action => {
+            }
+          });
         }
       });
     },

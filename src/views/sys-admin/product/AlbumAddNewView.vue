@@ -33,13 +33,21 @@
 export default {
   data() {
     return {
+      sort: [],
       ruleForm: {},
       rules: {
-        name: [],
-        description: [],
-
-      },
-      sort: []
+        name: [
+          {required: true, message: '请输入名称', trigger: 'blur'},
+          {min: 2, max: 25, message: '长度在 2 到 25 个字符', trigger: 'blur'}
+        ],
+        description: [
+          {required: true, message: '请输入简介', trigger: 'blur'}
+        ],
+        sort: [
+          {required: true, message: '请输入排序序号', trigger: 'blur'},
+          {pattern: /^(\d{1}|[1-9]{1}[0-9]?)$/, message: '排序序号必须是 0~99 之间的数字', trigger: 'blur'}
+        ]
+      }
     }
   },
   methods: {

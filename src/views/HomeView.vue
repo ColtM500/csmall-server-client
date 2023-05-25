@@ -116,6 +116,7 @@ export default {
   methods: {
     handleActiveMenuItem() {
       let currentPath = this.$router.currentRoute.path;
+      //用if判断处理 刷新后消失选中状态
       if (currentPath.startsWith('/sys-admin/product/album')) {
         currentPath = '/sys-admin/product/album';
       }
