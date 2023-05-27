@@ -1,6 +1,6 @@
 <template>
   <div>
-    <!--顶部面部屑标识与导航-->
+    <!-- 顶部面包屑标识与导航 -->
     <el-breadcrumb separator-class="el-icon-arrow-right" style="font-size: 16px;">
       <el-breadcrumb-item :to="{ path: '/' }">
         <i class="el-icon-s-promotion"></i> 后台管理
@@ -9,14 +9,14 @@
     </el-breadcrumb>
     <el-divider></el-divider>
 
-    <!--操作区域-->
-    <div style="margin-bottom: 20px; margin-right: 1000px">
-      <el-button type="primary" size="medium"
+    <!-- 操作区域 -->
+    <div style="margin: 0 0 20px 0;">
+      <el-button type="primary" size="medium" style="float: left"
                  @click="$router.push('/sys-admin/permission/admin/add-new')">添加管理员
       </el-button>
     </div>
 
-    <!--数据表格-->
+    <!-- 数据表格 -->
     <el-table :data="tableData" border style="width: 100%">
       <el-table-column prop="id" label="ID" width="60" align="center"></el-table-column>
       <el-table-column label="头像" width="60" align="center">
@@ -56,7 +56,7 @@
       </el-table-column>
     </el-table>
 
-    <!--分页控件-->
+    <!-- 分页控件 -->
     <div style="text-align: right; margin: 10px auto;">
       <el-pagination
           @current-change="changePage"
@@ -68,20 +68,61 @@
     </div>
 
   </div>
+
 </template>
 
 <script>
 export default {
   data(){
     return {
-
+      //表格数据
+      tableData:[],
+      //分页相关数据
+      total: 0,
+      pageSize: 20,
+      pageCount: 1,
+      currentPage: this.$router.currentRoute.query.page ? parseInt(this.$router.currentRoute.query.page) : 1,
     }
   },
   methods:{
+    toggleEnable(){
 
+    },
+    openEditDialog(){
+
+    },
+    openDeleteConfirm(){
+
+    },
+    // 切换分页
+    changePage(page) {
+      this.$router.replace('?page=' + page);
+      this.loadAdminList();
+    },
+    //加载管理员列表
+    loadAdminList() {
+      let page = this.$router.currentRoute.query.page;
+      if (!page) {
+        page = 1;
+      }
+
+      let url = 'http://localhost:9181/admin/list?page=' + page;
+      console.log('url = ' + url);
+
+      this.axios.get(url).then((response) => {
+        let jsonResult = response.data;
+        if (jsonResult.state == 20000) {
+          this.tableData = jsonResult.data;
+          this.currentPage = jsonResult.data.currentPage;
+          this.pageSize = jsonResult.data.pageSize;
+          this.total = jsonResult.data.total;
+        }
+      });
+    }
   },
-  mounted() {
 
+  mounted() {
+    this.loadAdminList();
   }
 }
 </script>
