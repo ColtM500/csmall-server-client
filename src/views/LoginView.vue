@@ -41,7 +41,32 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          alert('submit!');
+          let url = 'http://localhost:9181/admin/login';
+          console.log('url = ' + url);
+
+          let formData = this.qs.stringify(this.ruleForm);
+          console.log('formData = ' + formData);
+
+          this.axios.post(url, formData).then((response) => {
+            let jsonResult = response.data;
+            if (jsonResult.state == 20000) {
+              this.$message({
+                message: '登录成功！',
+                type: 'success'
+              });
+              let jwt = jsonResult.data;//doc文档中jwt就是data部分
+              console.log(jwt)
+              localStorage.setItem('localJwt', jwt)
+              //跳转
+              this.$router.push('/');
+            } else {
+              this.$alert(jsonResult.message, '错误', {
+                confirmButtonText: '确定',
+                callback: action => {
+                }
+              });
+            }
+          });
         } else {
           console.log('error submit!!');
           return false;
