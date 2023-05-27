@@ -185,6 +185,6 @@ export default {
 }
 
 .layout-main {
-
+  background-color: #ffffff;
 }
 </style>

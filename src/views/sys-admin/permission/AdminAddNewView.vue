@@ -40,8 +40,8 @@
             inactive-color="#ccc">
         </el-switch>
       </el-form-item>
-      <el-form-item label="角色">
-        <el-select v-model="ruleForm.roleIds" multiple placeholder="请选择" style="float: left">
+      <el-form-item label="角色" prop="roleIds" style="float: left">
+        <el-select v-model="ruleForm.roleIds" multiple placeholder="请选择">
           <el-option
               v-for="item in roleListOptions"
               :key="item.id"
@@ -67,15 +67,15 @@ export default {
       roleListOptions: [],
       //角色的下拉表单
       ruleForm: {
-        username: 'sb1',
-        password: 'wswsy',
-        nickname: 'wswsy',
-        avatar: 'wswsy',
-        phone: '132',
-        email: '123',
-        description: '123',
+        username: 'test-user-001',
+        password: '123456',
+        nickname: '测试管理员001',
+        avatar: 'https://img2.baidu.com/it/u=4244269751,4000533845&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500',
+        phone: '13700137001',
+        email: '13700137001@163.com',
+        description: '测试管理员001的简介',
         enable: 1,
-        roleIds: '123'
+        roleIds: []
       },
       rules: {
         username: [
@@ -153,7 +153,17 @@ export default {
       let url = 'http://localhost:9181/roles/list';
       console.log('url = ' + url);
 
-      this.axios.get(url).then((response) => {
+      //携带JWT
+      let localJwt = localStorage.getItem('localJwt')
+
+      this.axios
+          //在请求里将localJwt带出去 为了带特殊的请求头参数 要创建一个新的axios对象 故用create()其返回值还是axios
+          .create({
+            'headers':{//因为加了这个复杂请求头 浏览器中预检不会通过 所以要在后端配置文件中增加跨域的
+              'Authorization': localJwt
+            }
+          })
+          .get(url).then((response) => {
         let jsonResult = response.data;
         if (jsonResult.state == 20000) {
           this.roleListOptions = jsonResult.data;
@@ -166,11 +176,14 @@ export default {
         }
       });
     }
-
   },
+
   //生命周期中的钩子 页加载渲染完成，自动执行的方法 进行数据初始化操作
   mounted(){
     this.loadRoleList();
+
+    let localJwt = localStorage.getItem('localJwt');
+    console.log(localJwt)
   }
 }
 </script>
