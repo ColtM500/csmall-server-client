@@ -123,7 +123,7 @@ export default {
           .then((response) => {
         let jsonResult = response.data;
         if (jsonResult.state == 20000) {
-          this.tableData = jsonResult.data;
+          this.tableData = jsonResult.data.list;
           this.currentPage = jsonResult.data.currentPage;
           this.pageSize = jsonResult.data.pageSize;
           this.total = jsonResult.data.total;
@@ -134,9 +134,6 @@ export default {
 
   mounted() {
     this.loadAdminList();
-
-    // let localJwt = localStorage.getItem('localJwt');
-    // console.log(localJwt)
   }
 
 }

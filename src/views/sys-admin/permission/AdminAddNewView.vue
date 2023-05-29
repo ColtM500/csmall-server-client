@@ -190,8 +190,6 @@ export default {
   mounted(){
     this.loadRoleList();
 
-    // let localJwt = localStorage.getItem('localJwt');
-    // console.log(localJwt)
   }
 }
 </script>

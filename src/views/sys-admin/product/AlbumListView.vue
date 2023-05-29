@@ -83,10 +83,6 @@ export default {
         sort: ''
       },
       dialogFormVisible: false,
-      // form: {
-      //   name: '',
-      //   region: '',
-      // },
       //修改的rules规则
       rules: {
         name: [
