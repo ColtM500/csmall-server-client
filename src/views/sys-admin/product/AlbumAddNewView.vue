@@ -63,7 +63,16 @@ export default {
           let formData = this.qs.stringify(this.ruleForm);
           console.log('formData = ' + formData);
 
-          this.axios.post(url, this.ruleForm).then((response) => {
+          let localJwt = localStorage.getItem('localJwt');
+          console.log("此处的JWT1为: "+ localJwt)
+          this.axios
+              .create({
+                'headers': {
+                  'Authorization': localJwt
+                }
+              })
+              console.log("此处的JWT2为: "+ localJwt)
+              .post(url, formData).then((response) => {
             let jsonResult = response.data;
             console.log(response)
             if (jsonResult.state == 20000) {
@@ -89,6 +98,11 @@ export default {
     resetForm(formName) {
       this.$refs[formName].resetFields();
     }
+  },
+
+  mounted() {
+    let localJwt = localStorage.getItem('localJwt');
+    console.log(localJwt)
   }
 }
 </script>

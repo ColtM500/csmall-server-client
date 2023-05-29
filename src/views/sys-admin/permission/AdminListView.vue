@@ -109,7 +109,18 @@ export default {
       let url = 'http://localhost:9181/admin/list?page=' + page;
       console.log('url = ' + url);
 
-      this.axios.get(url).then((response) => {
+      //携带JWT
+      let localJwt = localStorage.getItem('localJwt')
+
+      this.axios
+          //在请求里将localJwt带出去 为了带特殊的请求头参数 要创建一个新的axios对象 故用create()其返回值还是axios
+          .create({
+            'headers':{//因为加了这个复杂请求头 浏览器中预检不会通过 所以要在后端配置文件中增加跨域的
+              'Authorization': localJwt
+            }
+          })
+          .get(url)
+          .then((response) => {
         let jsonResult = response.data;
         if (jsonResult.state == 20000) {
           this.tableData = jsonResult.data;
@@ -123,7 +134,11 @@ export default {
 
   mounted() {
     this.loadAdminList();
+
+    // let localJwt = localStorage.getItem('localJwt');
+    // console.log(localJwt)
   }
+
 }
 </script>
 

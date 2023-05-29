@@ -120,7 +120,15 @@ export default {
           let formData = this.qs.stringify(this.ruleForm);
           console.log('formData = ' + formData);
 
-          this.axios.post(url, formData).then((response) => {
+          let localJwt = localStorage.getItem('localJwt')
+
+          this.axios
+              .create({
+                'headers':{
+                  'Authorization': localJwt
+                }
+              })
+              .post(url, formData).then((response) => {
             let jsonResult = response.data;
             if (jsonResult.state == 20000) {
               this.$message({
@@ -182,8 +190,8 @@ export default {
   mounted(){
     this.loadRoleList();
 
-    let localJwt = localStorage.getItem('localJwt');
-    console.log(localJwt)
+    // let localJwt = localStorage.getItem('localJwt');
+    // console.log(localJwt)
   }
 }
 </script>

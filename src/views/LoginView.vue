@@ -54,9 +54,16 @@ export default {
                 message: '登录成功！',
                 type: 'success'
               });
+
+              // 将服务器端响应的JWT存储到localStorage
               let jwt = jsonResult.data;//doc文档中jwt就是data部分
               console.log(jwt)
               localStorage.setItem('localJwt', jwt)
+              console.log('已经将JWT存储到localStorage');
+
+              let localJwt = localStorage.getItem('localJwt');
+              console.log('测试JWT的localStorage.getItem是否能取到  所取值为: ' + localJwt);
+
               //跳转
               this.$router.push('/');
             } else {
