@@ -22,7 +22,9 @@
                        show-overflow-tooltip></el-table-column>
       <el-table-column prop="sort" label="排序序号" width="100" align="center"></el-table-column>
       <el-table-column label="查看图片" width="100" align="center">
-        <el-button size="mini">查看</el-button>
+        <template slot-scope="scope">
+        <el-button size="mini" @click="gotoPictureList(scope.row)">查看</el-button>
+        </template>
       </el-table-column>
       <el-table-column label="操作" width="100" align="center">
         <template slot-scope="scope">
@@ -66,22 +68,23 @@
 
 <script>
 export default {
-  data(){
+  data() {
     return {
       //表格数据
-      tableData:[],
+      tableData: [],
       //分页相关数据
       total: 0,
       pageSize: 20,
       pageCount: 1,
       currentPage: this.$router.currentRoute.query.page ? parseInt(this.$router.currentRoute.query.page) : 1,
-      //编辑框
+      //编辑框表单
       editForm: {
         id: '',
         name: '',
         description: '',
         sort: ''
       },
+      //编辑框可见性
       dialogFormVisible: false,
       //修改的rules规则
       rules: {
@@ -99,56 +102,39 @@ export default {
       },
     }
   },
-  methods:{
-    changePage(value){
+  methods: {
+    //跳转到图片列表
+    gotoPictureList(album){
+        this.$router.push('/sys-admin/product/album/picture-list?albumId=' + album.id)
+    },
+
+    //切换分页
+    changePage(value) {
       console.log('value = ' + value)
       //利用路由 的 replace 将现在的地址切换=> ?page=value
       this.$router.replace('?page=' + value);
       this.loadAlbumList();
     },
 
-    loadAlbumList() {
-      let page = this.$router.currentRoute.query.page;
-      if (!page) {
-        page = 1;
-      }
+    // 打开编辑对话框
+    openEditDialog(album) {
+      let url = 'http://localhost:9180/album/' + album.id;
+      console.log('url = ' + url);
 
       let localJwt = localStorage.getItem('localJwt')
-      let url = 'http://localhost:9180/album/list?page=' + page;
-      console.log('url = ' + url);
-
-      this.axios.create({
-        'headers':{//因为加了这个复杂请求头 浏览器中预检不会通过 所以要在后端配置文件中增加跨域的
-          'Authorization': localJwt
-        }
-      }).get(url).then((response) => {
-        let jsonResult = response.data;
-        if (jsonResult.state == 20000) {
-          this.tableData = jsonResult.data.list;
-          this.total = jsonResult.data.total;
-          this.pageSize = jsonResult.data.pageSize;
-          this.currentPage = jsonResult.data.currentPage;
-        } else {
-          this.$alert(jsonResult.message, '错误', {
-            confirmButtonText: '确定',
-            callback: action => {
+      this.axios
+          .create({
+            'headers': {
+              'Authorization': localJwt
             }
-          });
-        }
-      });
-    },
-
-    openEditDialog(album) {
-      let url = 'http://localhost:9180/album/getStandardById?id=' + album.id;
-      console.log('url = ' + url);
-
-      this.axios.get(url).then((response) => {
+          })
+          .get(url).then((response) => {
         let jsonResult = response.data;
         if (jsonResult.state == 20000) {
-          this.editForm = jsonResult.data;
           this.dialogFormVisible = true;
+          this.editForm = jsonResult.data;
         } else {
-          this.$alert(jsonResult.message, '错误', {
+          this.$alert(jsonResult.message, '警告', {
             confirmButtonText: '确定',
             callback: action => {
               this.loadAlbumList();
@@ -158,14 +144,23 @@ export default {
       });
     },
 
+    // 提交编辑表单
     submitEditForm() {
-      let url = 'http://localhost:9180/album/updateInfoById';
+      let url = 'http://localhost:9180/album/' + this.editForm.id + '/update';
       console.log('url = ' + url);
 
       let formData = this.qs.stringify(this.editForm);
       console.log('formData = ' + formData);
 
-      this.axios.post(url, formData).then((response) => {
+      let localJwt = localStorage.getItem('localJwt')
+      this.axios
+          //在请求里将localJwt带出去 为了带特殊的请求头参数 要创建一个新的axios对象 故用create()其返回值还是axios
+          .create({
+            'headers': {//因为加了这个复杂请求头 浏览器中预检不会通过 所以要在后端配置文件中增加跨域的
+              'Authorization': localJwt
+            }
+          })
+          .post(url, formData).then((response) => {
         let jsonResult = response.data;
         if (jsonResult.state == 20000) {
           this.$message({
@@ -174,7 +169,7 @@ export default {
           });
           this.dialogFormVisible = false;
           this.loadAlbumList();
-        } else if (jsonResult.state == 40400){
+        } else if (jsonResult.state == 40400) {
           this.$alert(jsonResult.message, '错误', {
             confirmButtonText: '确定',
             callback: action => {
@@ -192,7 +187,8 @@ export default {
       });
     },
 
-    openDeleteConfirm(album){
+    //打开删除确认框
+    openDeleteConfirm(album) {
       let message = '此操作将永久删除【' + album.id + '-' + album.name + '】相册，是否继续？';
       this.$confirm(message, '提示', {
         confirmButtonText: '确定',
@@ -204,41 +200,71 @@ export default {
       });
     },
 
-    handleDelete(album){
-      let url = 'http://localhost:9180/album/delete';
+    //处理删除
+    handleDelete(album) {
+      let url = 'http://localhost:9180/album/' + album.id + '/delete';
       console.log('url = ' + url);
-
-      let formData = 'id=' + album.id;
-      console.log('formData = ' + formData);
 
       //携带JWT
       let localJwt = localStorage.getItem('localJwt')
-
       this.axios
           //在请求里将localJwt带出去 为了带特殊的请求头参数 要创建一个新的axios对象 故用create()其返回值还是axios
           .create({
-            'headers':{//因为加了这个复杂请求头 浏览器中预检不会通过 所以要在后端配置文件中增加跨域的
+            'headers': {//因为加了这个复杂请求头 浏览器中预检不会通过 所以要在后端配置文件中增加跨域的
               'Authorization': localJwt
             }
           })
-          .post(url, formData)
+          .post(url)
           .then((response) => {
-
-        let jsonResult = response.data;
-        if (jsonResult.state == 20000) {
-          this.$message({
-            message: '删除相册成功！',
-            type: 'success'
-          });
-          this.loadAlbumList();
-        } else if (jsonResult.state == 40400) {
-          this.$alert(jsonResult.message, '错误', {
-            confirmButtonText: '确定',
-            callback: action => {
+            let jsonResult = response.data;
+            if (jsonResult.state == 20000) {
+              this.$message({
+                message: '删除相册成功！',
+                type: 'success'
+              });
               this.loadAlbumList();
+              console.log("已重新加载!");
+            } else if (jsonResult.state == 40400) {
+              this.$alert(jsonResult.message, '错误', {
+                confirmButtonText: '确定',
+                callback: action => {
+                  this.loadAlbumList();
+                }
+              });
+            } else if (jsonResult.state == 40900) {
+              this.$alert(jsonResult.message, '错误', {
+                confirmButtonText: '确定',
+                callback: action => {
+                }
+              });
             }
           });
-        } else if (jsonResult.state == 40900) {
+    },
+
+    //加载相册列表
+    loadAlbumList() {
+      let page = this.$router.currentRoute.query.page;
+      if (!page) {
+        page = 1;
+      }
+
+      let url = 'http://localhost:9180/album?page=' + page;
+      console.log('url = ' + url);
+
+      let localJwt = localStorage.getItem('localJwt')
+      this.axios.create({
+        'headers': {//因为加了这个复杂请求头 浏览器中预检不会通过 所以要在后端配置文件中增加跨域的
+          'Authorization': localJwt
+        }
+      }).get(url).then((response) => {
+        let jsonResult = response.data;
+        if (jsonResult.state == 20000) {
+          this.tableData = jsonResult.data.list;
+          this.currentPage = jsonResult.data.currentPage;
+          this.pageSize = jsonResult.data.pageSize;
+          this.pageCount = jsonResult.data.maxPage;
+          this.total = jsonResult.data.total;
+        } else {
           this.$alert(jsonResult.message, '错误', {
             confirmButtonText: '确定',
             callback: action => {
@@ -246,8 +272,9 @@ export default {
           });
         }
       });
-    },
+    }
   },
+
   mounted() {
     this.loadAlbumList();
   }

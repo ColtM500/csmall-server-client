@@ -57,22 +57,19 @@ export default {
           let url = 'http://localhost:9180/album/add-new';
           console.log('url = ' + url);
 
-          // let formData = 'name=' + this.ruleForm.name
-          //    + '&description=' + this.ruleForm.description
-          //    + '&sort=' + this.ruleForm.sort;
           let formData = this.qs.stringify(this.ruleForm);
           console.log('formData = ' + formData);
 
           let localJwt = localStorage.getItem('localJwt');
-          console.log("此处的JWT1为: "+ localJwt)
+          console.log("此处的JWT1为: " + localJwt)
           this.axios
               .create({
                 'headers': {
                   'Authorization': localJwt
                 }
-              })
-              console.log("此处的JWT2为: "+ localJwt)
-              .post(url, formData).then((response) => {
+              }).
+          // console.log("此处的JWT2为: " + localJwt)
+          post(url, formData).then((response) => {
             let jsonResult = response.data;
             console.log(response)
             if (jsonResult.state == 20000) {
