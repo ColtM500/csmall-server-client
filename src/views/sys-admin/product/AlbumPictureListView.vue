@@ -26,7 +26,7 @@
       <el-upload
           v-if="pictureList.length < 6"
           class="picture-uploader"
-          action="https://localhost:9082/resources/upload/image/product"
+          action="http://localhost:9082/resources/upload/image/product"
           :show-file-list="false"
           :on-success="handleUploadSuccess"
           list-type="picture">
@@ -63,7 +63,7 @@ export default {
     return {
       //当前显示图片列表的相册数据
       album: {
-        id: 0,
+        id: '',
         name: '相册名称'
       },
 
@@ -73,17 +73,120 @@ export default {
   },
 
   methods: {
-    //上传成功后的回调
-    handleUploadSuccess(){
 
+    // 上传成功后的回调
+    handleUploadSuccess(response) {
+      let data = {
+        albumId: this.album.id,
+        url: response.data.url
+      };
+
+      let url = 'http://localhost:9180/pictures/add-new';
+      console.log('url = ' + url);
+
+      let formData = this.qs.stringify(data);
+      console.log('formData = ' + formData);
+
+      let localJwt = localStorage.getItem('localJwt')
+      this.axios
+          .create({
+            'headers': {
+              'Authorization': localJwt
+            }
+          })
+          .post(url, formData).then((response) => {
+        let jsonResult = response.data;
+        if (jsonResult.state == 20000) {
+          this.loadPictureList();
+        } else {
+          this.$alert(jsonResult.message, '警告', {
+            confirmButtonText: '确定',
+            callback: action => {
+            }
+          });
+        }
+      });
     },
 
     //打开设置封面确认框
-    openSetCoverConfirm(){
+    openSetCoverConfirm() {
 
     },
 
-    //
+    //加载相册信息
+    loadAlbumInfo() {
+      let albumId = parseInt(this.$router.currentRoute.query.albumId);
+
+      console.log("正在加载相册信息……")
+
+      if (!albumId || albumId < 1) {
+        let message = '参数错误，无法加载相册数据！';
+        this.$alert(message, '操作失败', {
+          confirmButtonText: '确定',
+          callback: action => {
+            this.$router.push('/sys-admin/product/album');
+          }
+        });
+      }
+
+      let url = 'http://localhost:9180/album/' + albumId;
+      console.log('url=' + url);
+
+      let localJwt = localStorage.getItem('localJwt')
+      this.axios
+          .create({
+            'headers': {
+              'Authorization': localJwt
+            }
+          })
+          .get(url).then((response) => {
+        let jsonResult = response.data;
+        if (jsonResult.state == 20000) {
+          this.album = jsonResult.data;
+          this.loadPictureList();
+        } else {
+          this.$alert(jsonResult.message, '警告', {
+            confirmButtonText: '确定',
+            callback: action => {
+              this.$router.push('/sys-admin/product/album');
+            }
+          });
+        }
+      });
+    },
+
+    //加载相册的图片列表
+    loadPictureList() {
+      let url = 'http://localhost:9180/pictures/list-by-album?queryType=all&albumId=' + this.album.id;
+      console.log('url=' + url);
+
+      let localJwt = localStorage.getItem('localJwt')
+      this.axios
+          .create({
+            'headers': {
+              'Authorization': localJwt
+            }
+          })
+          .get(url).then((response) => {
+        let jsonResult = response.data;
+        if (jsonResult.state == 20000) {
+          this.pictureList = jsonResult.data.list;
+        } else {
+          this.$alert(jsonResult.message, '警告', {
+            confirmButtonText: '确定',
+            callback: action => {
+              this.$router.push('/sys-admin/product/album');
+            }
+          });
+        }
+      });
+    },
+
+    mounted() {
+      this.loadAlbumInfo();
+      this
+    }
+
   },
 
 }
